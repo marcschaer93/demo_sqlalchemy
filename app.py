@@ -11,9 +11,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+with app.app_context():
+    db.app = app
+    db.init_app(app)
+    db.create_all()
+
 class Message(db.Model):
-    with app.app_context():
-      db.create_all()
       id = db.Column(db.Integer, primary_key=True)
       user = db.Column(db.String(50), nullable=True)
       content = db.Column(db.String(500), nullable=True)
