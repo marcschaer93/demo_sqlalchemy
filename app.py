@@ -4,17 +4,13 @@ from datetime import datetime
 
 app = Flask(__name__)
 # POSTGRESQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///movies_example'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///messages_db'
 # SQLITE
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.app = app
-    db.init_app(app)
-    db.create_all()
 
 class Message(db.Model):
       id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +20,12 @@ class Message(db.Model):
       
       def __repr__(self):
           return '<Message %r>' % self.id
+      
+message = Message(user='John', content='Hello World!')
 
 if __name__ == '__main__':
-    app.run()
+	with app.app_context():
+		db.create_all()
+		db.session.add(message)
+		db.session.commit()
+		app.run()
